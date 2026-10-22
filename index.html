@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roblox RPG Architect - แผนผังแมพฟาร์มเลเวล & ลูกแก้วสคริปต์</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Kanit:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Ambient Cosmic Background & Starfield Canvas -->
+  <canvas id="space-canvas"></canvas>
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- App Wrapper -->
+  <div class="app-container">
+
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-orb-icon">
+          <div class="mini-core"></div>
+        </div>
+        <div class="brand-text">
+          <h1>ROBLOX RPG ARCHITECT</h1>
+          <p class="subtitle">ระบบแผนผังแมพฟาร์มเลเวล & ลูกแก้วคลังโค้ด Studio</p>
+        </div>
+      </div>
+
+      <!-- Action Controls -->
+      <div class="header-actions">
+        <!-- View Mode Switcher -->
+        <div class="view-toggle" role="group" aria-label="โหมดการแสดงผล">
+          <button id="btn-view-orbit" class="btn-toggle active" title="มุมมองวงโคจร 3D">
+            <span class="icon">🪐</span>
+            <span class="text">วงโคจร 3D</span>
+          </button>
+          <button id="btn-view-grid" class="btn-toggle" title="มุมมองการ์ด">
+            <span class="icon">📱</span>
+            <span class="text">ตารางการ์ด</span>
+          </button>
+        </div>
+
+        <!-- Studio Guide Button -->
+        <button id="btn-open-guide" class="btn-secondary">
+          <span class="icon">📖</span>
+          <span>คู่มือ Studio</span>
+        </button>
+
+        <!-- Sound Toggle -->
+        <button id="btn-sound-toggle" class="btn-icon" title="เปิด/ปิดเสียงเอฟเฟกต์">
+          <span id="sound-icon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Filter & Search Toolbar -->
+    <nav class="toolbar">
+      <!-- Search Input -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="system-search" placeholder="ค้นหาระบบ, ชื่อสคริปต์, หรือโฟลเดอร์ เช่น 'ServerScriptService'..." autocomplete="off">
+        <button id="search-clear" class="btn-clear hidden">✕</button>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="category-pills" id="category-pills">
+        <button class="pill active" data-category="all">✨ ทั้งหมด (8)</button>
+        <button class="pill" data-category="core">🔮 ระบบหลัก (Core)</button>
+        <button class="pill" data-category="combat">⚔️ ต่อสู้ & อาวุธ</button>
+        <button class="pill" data-category="monster">👾 มอนสเตอร์</button>
+        <button class="pill" data-category="world">🚧 โซน & บาเรียร์</button>
+        <button class="pill" data-category="quest">📜 เควสต์ & NPC</button>
+        <button class="pill" data-category="save">💾 บันทึกเซฟ</button>
+        <button class="pill" data-category="endgame">🔄 จุติ (Endgame)</button>
+      </div>
+    </nav>
+
+    <!-- Main Viewport: The Interactive Universe -->
+    <main class="main-viewport">
+      
+      <!-- Interactive 3D / Orbital Solar System View -->
+      <div id="orbit-container" class="orbit-view active">
+        <!-- Interactive Canvas for Orbital Mechanics & Connections -->
+        <canvas id="orbit-canvas"></canvas>
+
+        <!-- Central Sun / Core Nexus -->
+        <div class="center-nexus">
+          <div class="nexus-pulse-ring"></div>
+          <div class="nexus-pulse-ring ring-delayed"></div>
+          <div class="nexus-core">
+            <div class="nexus-symbol">⚡</div>
+            <div class="nexus-label">ROBLOX<br>CORE NEXUS</div>
+          </div>
+        </div>
+
+        <!-- Interactive Sphere Nodes Container (Placed dynamically by app.js) -->
+        <div id="orb-nodes-layer" class="orb-nodes-layer"></div>
+
+        <!-- On-Screen Control Hint -->
+        <div class="orbit-hint">
+          <span>💡 เลื่อนเมาส์ชี้เพื่อดูข้อมูลย่อ • คลิกที่ลูกแก้วเพื่อดูโค้ดและวิธีใส่ใน Studio</span>
+        </div>
+      </div>
+
+      <!-- Grid Matrix View (Alternative Layout) -->
+      <div id="grid-container" class="grid-view hidden">
+        <div class="grid-cards" id="grid-cards-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Map Progression Architecture Bar -->
+    <footer class="progression-bar">
+      <div class="progression-title">
+        <span class="badge-tag">MAP ARCHITECTURE</span>
+        <span>เส้นทางการเติบโตของแมพฟาร์มเลเวล (Zone Progression)</span>
+      </div>
+      <div class="progression-steps">
+        <div class="step-item active">
+          <span class="step-num">Zone 0</span>
+          <span class="step-name">🏙️ เมืองหลัก Safe Zone</span>
+        </div>
+        <div class="step-arrow">➔</div>
+        <div class="step-item">
+          <span class="step-num">Zone 1 (Lv.1-15)</span>
+          <span class="step-name">🌿 ทุ่งหญ้าสไลม์</span>
+        </div>
+        <div class="step-arrow">➔</div>
+        <div class="step-item">
+          <span class="step-num">Zone 2 (Lv.15-35)</span>
+          <span class="step-name">⛏️ ถ้ำเหมืองก็อบลิน</span>
+        </div>
+        <div class="step-arrow">➔</div>
+        <div class="step-item">
+          <span class="step-num">Zone 3 (Lv.35-65)</span>
+          <span class="step-name">🌲 ป่าต้องสาป</span>
+        </div>
+        <div class="step-arrow">➔</div>
+        <div class="step-item">
+          <span class="step-num">Zone 4 (Lv.65-100)</span>
+          <span class="step-name">🌋 แดนภูเขาไฟ</span>
+        </div>
+        <div class="step-arrow">➔</div>
+        <div class="step-item rebirth-step">
+          <span class="step-num">Lv.100+</span>
+          <span class="step-name">🔄 ลานพิธีจุติ (Rebirth)</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- FLOATING ORB HOVER PREVIEW TOOLTIP                        -->
+  <!-- ========================================================= -->
+  <div id="orb-tooltip" class="orb-tooltip hidden">
+    <div class="tooltip-header">
+      <span class="tooltip-icon" id="tt-icon">🔮</span>
+      <div>
+        <h4 id="tt-title">ระบบเลเวล</h4>
+        <span class="tooltip-badge" id="tt-service">ServerScriptService</span>
+      </div>
+    </div>
+    <p class="tooltip-desc" id="tt-desc">คำอธิบายระบบ...</p>
+    <div class="tooltip-footer">
+      <span class="tooltip-diff" id="tt-diff">ความยาก: ง่าย</span>
+      <span class="tooltip-cta">👉 คลิกเพื่อเปิดดูโค้ด</span>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- SYSTEM DETAIL MODAL (DRAWER)                              -->
+  <!-- ========================================================= -->
+  <div id="detail-modal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-card">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="modal-orb-badge" id="modal-orb-icon">🔮</div>
+          <div>
+            <div class="modal-tags">
+              <span class="tag-number" id="modal-num">01</span>
+              <span class="tag-category" id="modal-category">ระบบหลัก</span>
+              <span class="tag-difficulty" id="modal-diff">ความยาก: ปานกลาง</span>
+            </div>
+            <h2 id="modal-title">ชื่อระบบ</h2>
+          </div>
+        </div>
+        <div class="modal-header-right">
+          <button id="modal-btn-prev" class="btn-nav" title="ระบบก่อนหน้า">◀ ก่อนหน้า</button>
+          <button id="modal-btn-next" class="btn-nav" title="ระบบถัดไป">ถัดไป ▶</button>
+          <button id="modal-close" class="btn-close" title="ปิดหน้าต่าง">✕</button>
+        </div>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="modal-tabs">
+        <button class="modal-tab active" data-tab="tab-code">
+          <span class="icon">💻</span>
+          <span>โค้ดสคริปต์ (Roblox Lua)</span>
+        </button>
+        <button class="modal-tab" data-tab="tab-where">
+          <span class="icon">📍</span>
+          <span>วิธีใส่ใน Roblox Studio</span>
+        </button>
+        <button class="modal-tab" data-tab="tab-overview">
+          <span class="icon">📖</span>
+          <span>หลักการทำงาน & ผังระบบ</span>
+        </button>
+        <button class="modal-tab" data-tab="tab-config">
+          <span class="icon">⚙️</span>
+          <span>การปรับแต่งค่า (Config)</span>
+        </button>
+      </div>
+
+      <!-- Modal Content Body -->
+      <div class="modal-body">
+        
+        <!-- Tab 1: Code View -->
+        <div id="tab-code" class="tab-pane active">
+          <div class="code-toolbar">
+            <div class="code-info">
+              <span class="file-type-badge" id="code-script-type">Script</span>
+              <span class="file-location" id="code-location">ServerScriptService > LeaderstatsManager</span>
+            </div>
+            <button id="btn-copy-code" class="btn-copy">
+              <span class="copy-icon">📋</span>
+              <span class="copy-text">คัดลอกโค้ด (Copy Code)</span>
+            </button>
+          </div>
+          <div class="code-container">
+            <pre><code id="code-content" class="language-lua">-- โค้ด Lua จะแสดงที่นี่</code></pre>
+          </div>
+        </div>
+
+        <!-- Tab 2: Where to Put (Placement Tree) -->
+        <div id="tab-where" class="tab-pane">
+          <div class="placement-layout">
+            <div class="placement-steps-col">
+              <h3>📌 ขั้นตอนการสร้างและใส่สคริปต์:</h3>
+              <ol class="step-guide-list" id="modal-steps-list">
+                <!-- Populated via JS -->
+              </ol>
+            </div>
+            <div class="placement-tree-col">
+              <h3>📂 โครงสร้างในหน้าต่าง Explorer:</h3>
+              <div class="tree-preview-box">
+                <pre id="modal-tree-content">Explorer Tree</pre>
+              </div>
+              <div class="placement-tip">
+                💡 <strong>เคล็ดลับ:</strong> ถ้าหาหน้าต่าง Explorer ไม่เจอ ให้ไปที่แถบเมนูด้านบน กด <strong>View</strong> แล้วคลิกเปิด <strong>Explorer</strong> และ <strong>Properties</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Overview & Mechanics -->
+        <div id="tab-overview" class="tab-pane">
+          <div class="overview-box">
+            <h3>🎯 หน้าที่ของระบบนี้</h3>
+            <p id="modal-overview-desc" class="overview-lead"></p>
+
+            <div class="feature-grid" id="modal-feature-grid">
+              <div class="feature-card">
+                <div class="feat-icon">⚡</div>
+                <h4>เชื่อมโยงอัตโนมัติ</h4>
+                <p>รองรับการทำงานร่วมกับระบบอื่นผ่าน _G หรือ RemoteEvents ทันที</p>
+              </div>
+              <div class="feature-card">
+                <div class="feat-icon">🛡️</div>
+                <h4>ป้องกันบั๊ก & Exploiter</h4>
+                <p>มีระบบตรวจสอบทางฝั่ง Server ป้องกันผู้เล่นโกงระยะหรือสแปม</p>
+              </div>
+              <div class="feature-card">
+                <div class="feat-icon">🚀</div>
+                <h4>เพิ่มความสนุก (Game Feel)</h4>
+                <p>มีเอฟเฟกต์เสียงและแสงเมื่อเกิดเหตุการณ์สำคัญ</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Config & Variables -->
+        <div id="tab-config" class="tab-pane">
+          <div class="config-table-container">
+            <h3>🔧 ตัวแปรที่คุณสามารถปรับแต่งได้ในสคริปต์:</h3>
+            <table class="config-table">
+              <thead>
+                <tr>
+                  <th>ชื่อตัวแปร (Variable)</th>
+                  <th>คำอธิบายหน้าที่ & คำแนะนำการปรับ</th>
+                </tr>
+              </thead>
+              <tbody id="modal-config-tbody">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <span class="footer-hint">กดแป้นพิมพ์ <strong>ESC</strong> หรือคลิกพื้นที่ภายนอกเพื่อปิดหน้าต่าง</span>
+        <button id="modal-btn-copy-bottom" class="btn-primary">
+          <span>📋 คัดลอกโค้ดสคริปต์</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- ROBLOX STUDIO BEGINNER GUIDE MODAL                        -->
+  <!-- ========================================================= -->
+  <div id="guide-modal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-card guide-card">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="modal-orb-badge" style="background: radial-gradient(circle, #3b82f6, #1d4ed8);">📖</div>
+          <div>
+            <h2>คู่มือการใส่สคริปต์ใน Roblox Studio สำหรับมือใหม่</h2>
+            <p class="subtitle">ทำความเข้าใจโฟลเดอร์และประเภทของสคริปต์อย่างถูกต้อง</p>
+          </div>
+        </div>
+        <button id="guide-close" class="btn-close">✕</button>
+      </div>
+
+      <div class="modal-body guide-body">
+        
+        <div class="guide-section">
+          <h3>1. ความแตกต่างของประเภทสคริปต์ (Script Types)</h3>
+          <div class="script-type-cards">
+            <div class="type-card script-server">
+              <div class="type-badge">📜 Script (Server Script)</div>
+              <p>ทำงานที่ <strong>เซิร์ฟเวอร์ (Server)</strong> ทุกคนในเกมจะมองเห็นผลลัพธ์เหมือนกัน ใช้สำหรับแจก EXP, บันทึก DataStore, สปอว์นมอนสเตอร์ และคำนวณดาเมจ</p>
+              <span class="tag-loc">ใส่ใน: ServerScriptService, Workspace</span>
+            </div>
+            <div class="type-card script-client">
+              <div class="type-badge">📜 LocalScript (Client Script)</div>
+              <p>ทำงานที่ <strong>เครื่องผู้เล่นแต่ละคน (Client)</strong> คนอื่นจะไม่เห็น ใช้สำหรับตรวจจับการกดปุ่มคีย์บอร์ด, อนิเมชันตัวละคร, และหน้าจอ UI</p>
+              <span class="tag-loc">ใส่ใน: StarterPlayerScripts, StarterGui, Tools</span>
+            </div>
+            <div class="type-card script-module">
+              <div class="type-badge">📜 ModuleScript</div>
+              <p>สคริปต์ที่เก็บฟังก์ชันหรือตารางข้อมูลส่วนกลาง เพื่อให้สคริปต์อื่นๆ เรียกใช้งานซ้ำได้ (ผ่าน <code>require()</code>)</p>
+              <span class="tag-loc">ใส่ใน: ReplicatedStorage</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-section">
+          <h3>2. หน้าที่ของแต่ละโฟลเดอร์หลักใน Explorer</h3>
+          <table class="folder-guide-table">
+            <thead>
+              <tr>
+                <th>โฟลเดอร์ (Service)</th>
+                <th>คำอธิบายและหน้าที่</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>📁 ServerScriptService</strong></td>
+                <td>ที่เก็บโค้ดสำคัญของเกมที่ปลอดภัยที่สุด ผู้เล่น (Client) มองไม่เห็นโค้ดในนี้ ใช้เก็บระบบเลเวล, ระบบเซฟ, ระบบคำนวณเงิน</td>
+              </tr>
+              <tr>
+                <td><strong>📁 ServerStorage</strong></td>
+                <td>ที่เก็บสิ่งของ โมเดลมอนสเตอร์ หรือไอเทมที่ยังไม่ต้องการให้ปรากฏในเกมตอนแรก เพื่อนำมา Clone ในภายหลัง</td>
+              </tr>
+              <tr>
+                <td><strong>📁 ReplicatedStorage</strong></td>
+                <td>พื้นที่ส่วนกลางที่ทั้ง Server และ Client เข้าถึงได้ ใช้สำหรับวาง <code>RemoteEvent</code>, <code>RemoteFunction</code> เพื่อส่งข้อมูลหากัน</td>
+              </tr>
+              <tr>
+                <td><strong>📁 StarterPack</strong></td>
+                <td>อาวุธหรืออุปกรณ์ (Tool) ที่จะใส่เข้าไปในกระเป๋าของผู้เล่นอัตโนมัติทันทีที่เข้าเกมหรือเกิดใหม่</td>
+              </tr>
+              <tr>
+                <td><strong>📁 Workspace</strong></td>
+                <td>โลก 3 มิติในเกม ทั้งหมดที่ตาผู้เล่นมองเห็น เช่น แผนที่, กำแพงกั้นโซน, จุดสปอว์น, และตัวละคร NPC</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-section">
+          <h3>3. ข้อควรระวังสำคัญก่อนเปิดเซิร์ฟเวอร์จริง</h3>
+          <ul class="warning-list">
+            <li>⚠️ <strong>ต้องเปิดสิทธิ์ DataStore:</strong> ไปที่ <code>Home > Game Settings > Security > Enable Studio Access to API Services</code> ติ๊กเปิดทุกครั้ง มิฉะนั้นระบบเซฟจะไม่ทำงานใน Studio</li>
+            <li>⚠️ <strong>อย่าทำดาเมจฝั่ง Client:</strong> อย่าสั่งลดเลือดมอนสเตอร์ใน LocalScript เพราะผู้เล่นสายแฮ็กจะสามารถเสกดาเมจได้ไม่จำกัด ให้ส่ง RemoteEvent ไปให้ Server เช็กเสมอ</li>
+            <li>⚠️ <strong>ชิ้นส่วน Handle ของดาบ:</strong> ใน Tool ของดาบ Part ต้องตั้งชื่อว่า <code>Handle</code> (ตัว H พิมพ์ใหญ่) เท่านั้น ตัวละครถึงจะหยิบขึ้นมาถือได้</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button id="guide-btn-ok" class="btn-primary">เข้าใจแล้ว เริ่มสร้างแมพเลย!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden">
+    <span class="toast-icon">✅</span>
+    <span id="toast-msg">คัดลอกโค้ดสำเร็จ!</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
